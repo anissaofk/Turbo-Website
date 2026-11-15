@@ -1,5 +1,5 @@
 import { cars } from "./cars";
-import type { Car, CarFilters } from "./types";
+import type { Car, CarFilters } from "@/types";
 
 function first(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];

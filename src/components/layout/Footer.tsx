@@ -7,8 +7,8 @@ export function Footer() {
         <div>
           <p className="font-display text-3xl font-bold tracking-tight">Turbo</p>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">
-            Find your next car with sharp filters, clear pricing, and direct
-            contact to dealers and private sellers.
+            A car marketplace starter you can grow into a full product — browse,
+            filter, and sell.
           </p>
         </div>
         <div>
@@ -54,7 +54,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 text-xs text-white/45 sm:px-6 lg:px-8">
           <span>© 2026 Turbo</span>
-          <span>Inspired by marketplace clarity — built for drivers</span>
+          <span>Starter template</span>
         </div>
       </div>
     </footer>

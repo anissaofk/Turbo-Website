@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Syne } from "next/font/google";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { Footer, Header } from "@/components/layout";
 import "./globals.css";
 
 const body = Outfit({
@@ -17,11 +16,11 @@ const display = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Turbo — Vehicle marketplace",
+    default: "Turbo — Buy & sell cars",
     template: "%s · Turbo",
   },
   description:
-    "Buy and sell cars with Turbo. Search by make, price, fuel, and city — inspired by marketplace clarity.",
+    "Turbo is a car marketplace starter. Browse listings, filter by what matters, and sell your car.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

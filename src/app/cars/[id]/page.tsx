@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ListingGallery } from "@/components/ListingGallery";
+import { ListingGallery } from "@/components/cars";
 import { cars, getCarById } from "@/data/cars";
 import { formatMileage, formatPrice } from "@/data/filter";
 
@@ -116,7 +116,8 @@ export default async function CarDetailPage({
               </p>
               <p className="mt-2 text-lg font-semibold">{car.seller.name}</p>
               <p className="mt-1 text-sm text-muted">
-                {car.seller.type} · {car.seller.city} · ★ {car.seller.rating.toFixed(1)}
+                {car.seller.type} · {car.seller.city} · ★{" "}
+                {car.seller.rating.toFixed(1)}
               </p>
               <a
                 href={`tel:${car.seller.phone.replace(/\s/g, "")}`}
@@ -130,7 +131,7 @@ export default async function CarDetailPage({
                 )}`}
                 className="mt-3 inline-flex w-full items-center justify-center border border-line px-4 py-3 text-sm font-semibold transition-colors hover:bg-paper-deep"
               >
-                Email seller via Turbo
+                Email via Turbo
               </a>
             </div>
           </div>

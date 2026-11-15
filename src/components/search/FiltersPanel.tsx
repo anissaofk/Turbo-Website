@@ -1,8 +1,5 @@
-import {
-  getLocations,
-  getMakes,
-} from "@/data/cars";
-import type { CarFilters } from "@/data/types";
+import { getLocations, getMakes } from "@/data/cars";
+import type { CarFilters } from "@/types";
 
 const fuels = ["Petrol", "Diesel", "Hybrid", "Electric"] as const;
 const transmissions = ["Manual", "Automatic"] as const;

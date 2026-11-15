@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { CarCard } from "@/components/CarCard";
-import { SearchForm } from "@/components/SearchForm";
+import { CarCard } from "@/components/cars";
+import { SearchForm } from "@/components/search";
 import { getFeaturedCars } from "@/data/cars";
 
 const heroImage =
@@ -16,19 +16,19 @@ export default function Home() {
         style={{ ["--hero-image" as string]: `url(${heroImage})` }}
       >
         <div className="relative mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pb-20">
-          <p className="animate-rise text-sm font-semibold tracking-[0.22em] text-accent uppercase">
+          <p className="animate-rise font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Turbo
           </p>
-          <h1 className="animate-rise delay-1 mt-4 max-w-3xl font-display text-5xl leading-[0.95] font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Find the car that fits your drive.
+          <h1 className="animate-rise delay-1 mt-4 max-w-3xl font-display text-4xl leading-[1.05] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Your next car starts here.
           </h1>
           <p className="animate-rise delay-2 mt-5 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
-            Search thousands of dealer and private listings by make, budget, and
-            city — then contact sellers directly.
+            Browse local listings, filter by budget and fuel, or put your own
+            car up for sale in a few steps.
           </p>
           <div className="animate-rise delay-3 mt-8 flex flex-wrap gap-3">
             <Link href="/search" className="btn-primary">
-              Browse marketplace
+              Browse cars
             </Link>
             <Link href="/sell" className="btn-ghost">
               Sell your car
@@ -45,18 +45,18 @@ export default function Home() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-              Featured listings
+              Featured cars
             </h2>
             <p className="mt-2 max-w-lg text-muted">
-              Hand-picked cars across Germany — clear price, mileage, and seller
-              type up front.
+              Sample listings from the seed data — swap them for your own API or
+              CMS later.
             </p>
           </div>
           <Link
             href="/search"
             className="text-sm font-semibold text-accent hover:text-accent-deep"
           >
-            View all cars →
+            View all →
           </Link>
         </div>
 
@@ -71,16 +71,16 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
           {[
             {
-              title: "Search first",
-              copy: "Filter by make, price, fuel, body type, and city — the same clarity people expect from big marketplaces.",
+              title: "Search",
+              copy: "Make, price, fuel, city — start from what buyers actually care about.",
             },
             {
-              title: "Dealers & private",
-              copy: "Every listing shows seller type, location, and a direct phone line so you can move fast.",
+              title: "Compare",
+              copy: "Open a listing for photos, specs, and a direct line to the seller.",
             },
             {
-              title: "Sell in minutes",
-              copy: "Publish your car with the essentials buyers need: price, mileage, history notes, and contact details.",
+              title: "Sell",
+              copy: "Use the sell form as a starting point for your own listing flow.",
             },
           ].map((item, index) => (
             <div

@@ -20,8 +20,8 @@ export function SellForm() {
           Your car is in the queue
         </h2>
         <p className="mt-3 max-w-lg text-muted">
-          Thanks — in this demo, listings are stored locally on the client only.
-          In production this would create a live Turbo marketplace ad.
+          Thanks — this starter only confirms the form on the client.
+          Hook it up to your API or database next.
         </p>
         <button
           type="button"

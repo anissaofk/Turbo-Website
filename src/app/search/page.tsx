@@ -1,13 +1,12 @@
 import { Suspense } from "react";
-import { CarCard } from "@/components/CarCard";
-import { FiltersPanel } from "@/components/FiltersPanel";
-import { SortSelect } from "@/components/SortSelect";
+import { CarCard } from "@/components/cars";
+import { FiltersPanel, SortSelect } from "@/components/search";
 import { filterCars, parseFilters } from "@/data/filter";
-import type { CarFilters } from "@/data/types";
+import type { CarFilters } from "@/types";
 
 export const metadata = {
   title: "Browse cars",
-  description: "Search Turbo listings by make, price, fuel, mileage, and city.",
+  description: "Filter Turbo listings by make, price, fuel, mileage, and city.",
 };
 
 function ResultsSkeleton() {
@@ -86,14 +85,14 @@ export default function SearchPage({
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="animate-rise">
         <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
-          Marketplace
+          Inventory
         </p>
         <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
           Browse cars
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
-          Refine by budget, fuel, mileage, and location — then open a listing to
-          contact the seller.
+          Starter search page — wire these filters to your backend when you are
+          ready.
         </p>
       </div>
 

@@ -1,8 +1,8 @@
-import { SellForm } from "@/components/SellForm";
+import { SellForm } from "@/components/sell";
 
 export const metadata = {
   title: "Sell your car",
-  description: "List your car on Turbo with price, mileage, and seller contact details.",
+  description: "List a car on Turbo — starter form you can connect to your API.",
 };
 
 export default function SellPage() {
@@ -10,14 +10,14 @@ export default function SellPage() {
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="animate-rise max-w-2xl">
         <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
-          For sellers
+          Sellers
         </p>
         <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-          Sell your car on Turbo
+          Sell your car
         </h1>
         <p className="mt-4 text-muted">
-          Add the details buyers filter for — make, price, mileage, fuel — and
-          go live on the marketplace.
+          Demo listing form. Replace the client-side success state with a real
+          API call when you add a backend.
         </p>
       </div>
 

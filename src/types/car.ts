@@ -1,3 +1,5 @@
+/** Core domain types for the Turbo car marketplace template. */
+
 export type FuelType = "Petrol" | "Diesel" | "Hybrid" | "Electric";
 export type Transmission = "Manual" | "Automatic";
 export type BodyType =
