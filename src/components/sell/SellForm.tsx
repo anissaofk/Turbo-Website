@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { categories } from "@/data/categories";
+import { getAllMakes } from "@/data/makes";
 
 export function SellForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -12,23 +14,23 @@ export function SellForm() {
 
   if (submitted) {
     return (
-      <div className="animate-rise border border-line bg-white p-8 sm:p-10">
-        <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
-          Listing received
+      <div className="card-soft animate-rise p-8 sm:p-10">
+        <p className="text-xs font-semibold tracking-[0.16em] text-blue uppercase">
+          Annonce reçue
         </p>
         <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">
-          Your car is in the queue
+          Merci — votre annonce est en file
         </h2>
         <p className="mt-3 max-w-lg text-muted">
-          Thanks — this starter only confirms the form on the client.
-          Hook it up to your API or database next.
+          Pour cette démo, le formulaire reste côté client. Branchez ensuite
+          votre API ou base de données.
         </p>
         <button
           type="button"
           className="btn-primary mt-8"
           onClick={() => setSubmitted(false)}
         >
-          List another car
+          Publier une autre annonce
         </button>
       </div>
     );
@@ -37,29 +39,53 @@ export function SellForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="animate-rise border border-line bg-white p-6 sm:p-8"
+      className="card-soft animate-rise p-6 sm:p-8"
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block sm:col-span-1">
+        <label className="block sm:col-span-2">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Make
+            Case
           </span>
-          <input name="make" required className="field" placeholder="BMW" />
+          <select name="category" required className="field" defaultValue="">
+            <option value="" disabled>
+              Choisir
+            </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Model
+            Marque
+          </span>
+          <select name="make" required className="field" defaultValue="">
+            <option value="" disabled>
+              Choisir
+            </option>
+            {getAllMakes().map((make) => (
+              <option key={make} value={make}>
+                {make}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
+            Modèle
           </span>
           <input
             name="model"
             required
             className="field"
-            placeholder="320d M Sport"
+            placeholder="Civic Sport"
           />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Year
+            Année
           </span>
           <input
             name="year"
@@ -68,66 +94,37 @@ export function SellForm() {
             min={1990}
             max={2026}
             className="field"
-            placeholder="2021"
           />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Price (€)
+            Prix ($)
           </span>
-          <input
-            name="price"
-            type="number"
-            required
-            min={500}
-            className="field"
-            placeholder="28900"
-          />
+          <input name="price" type="number" min={0} className="field" />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Mileage (km)
+            Mensualité ($)
           </span>
-          <input
-            name="mileage"
-            type="number"
-            required
-            min={0}
-            className="field"
-            placeholder="42000"
-          />
+          <input name="monthly" type="number" min={0} className="field" />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Fuel
+            Mise de fonds ($)
           </span>
-          <select name="fuel" required className="field" defaultValue="">
-            <option value="" disabled>
-              Select
-            </option>
-            <option>Petrol</option>
-            <option>Diesel</option>
-            <option>Hybrid</option>
-            <option>Electric</option>
-          </select>
+          <input name="downPayment" type="number" min={0} className="field" />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Transmission
+            Kilométrage
           </span>
-          <select name="transmission" required className="field" defaultValue="">
-            <option value="" disabled>
-              Select
-            </option>
-            <option>Manual</option>
-            <option>Automatic</option>
-          </select>
+          <input name="mileage" type="number" min={0} className="field" />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            City
+            Ville
           </span>
-          <input name="city" required className="field" placeholder="Berlin" />
+          <input name="city" required className="field" placeholder="Montréal" />
         </label>
         <label className="block sm:col-span-2">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
@@ -138,25 +135,25 @@ export function SellForm() {
             required
             rows={5}
             className="field resize-y"
-            placeholder="Service history, extras, reason for selling..."
+            placeholder="État, entretien, conditions de location ou de bail..."
           />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Your name
+            Votre nom
           </span>
           <input name="sellerName" required className="field" />
         </label>
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold tracking-wide text-muted uppercase">
-            Phone
+            Téléphone
           </span>
           <input name="phone" required className="field" type="tel" />
         </label>
       </div>
 
       <button type="submit" className="btn-primary mt-6 w-full sm:w-auto">
-        Publish listing
+        Publier l&apos;annonce
       </button>
     </form>
   );

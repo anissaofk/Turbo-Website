@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Outfit, Syne } from "next/font/google";
+import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import { Footer, Header } from "@/components/layout";
 import "./globals.css";
 
-const body = Outfit({
+const body = Manrope({
   variable: "--font-body",
   subsets: ["latin"],
 });
 
-const display = Syne({
+const display = Plus_Jakarta_Sans({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
@@ -16,20 +16,20 @@ const display = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Turbo — Buy & sell cars",
-    template: "%s · Turbo",
+    default: "Autiva — Trouvez. Comparez. Achetez.",
+    template: "%s · Autiva",
   },
   description:
-    "Turbo is a car marketplace starter. Browse listings, filter by what matters, and sell your car.",
+    "Votre assistant automobile intelligent pour trouver la voiture parfaite, au meilleur prix.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="fr"
       className={`${body.variable} ${display.variable} h-full antialiased`}
     >
-      <body className="atmosphere grain relative flex min-h-full flex-col">
+      <body className="page-shell relative flex min-h-full flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

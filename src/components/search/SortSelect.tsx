@@ -16,17 +16,18 @@ export function SortSelect() {
 
   return (
     <label className="flex items-center gap-2 text-sm text-muted">
-      <span className="whitespace-nowrap">Sort by</span>
+      <span className="whitespace-nowrap">Trier par</span>
       <select
         value={current}
         onChange={(event) => onChange(event.target.value)}
-        className="field w-auto min-w-[10rem] py-2"
+        className="field w-auto min-w-[11rem] py-2"
       >
-        <option value="newest">Newest</option>
-        <option value="price-asc">Price ↑</option>
-        <option value="price-desc">Price ↓</option>
-        <option value="mileage-asc">Mileage ↑</option>
-        <option value="year-desc">Year ↓</option>
+        <option value="newest">Plus récents</option>
+        <option value="monthly-asc">Mensualité ↑</option>
+        <option value="price-asc">Prix ↑</option>
+        <option value="price-desc">Prix ↓</option>
+        <option value="mileage-asc">Kilométrage ↑</option>
+        <option value="year-desc">Année ↓</option>
       </select>
     </label>
   );

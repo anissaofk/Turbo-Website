@@ -7,13 +7,13 @@ export default function NotFound() {
         404
       </p>
       <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight">
-        Listing not found
+        Annonce introuvable
       </h1>
       <p className="mt-3 text-muted">
-        That car may have sold — or the link is outdated.
+        Cette page n&apos;existe plus — ou le lien est incorrect.
       </p>
       <Link href="/search" className="btn-primary mt-8">
-        Browse marketplace
+        Voir les annonces
       </Link>
     </div>
   );

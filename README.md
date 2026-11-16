@@ -1,60 +1,41 @@
-# Turbo — car marketplace template
+# Autiva — annonces auto intelligentes
 
-Starter for a **buy & sell cars** website. Inspired by marketplace UX patterns (search-first home, filters, listing detail, sell flow) — not a clone of any existing site.
+Site pour **chercher des annonces** auto (Québec / CAD) avec :
 
-## Quick start
+- **Cases** : neuf & offres, usagés, locations, reprises de bail, inspection & garage, location entre particuliers
+- **Recherche détaillée** (marque, $/mois, mise de fonds, carburant, etc.)
+- **Recherche intelligente** : l’utilisateur écrit en français, Autiva extrait l’intention
+
+Exemple :
+
+> « Je veux une sportive fiable à moins de 700 $ par mois, sans mise de fonds »
+
+## Démarrage
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+→ [http://localhost:3000](http://localhost:3000)
 
-## What’s included
-
-| Route | Role |
-|-------|------|
-| `/` | Brand hero + quick search + featured cars |
-| `/search` | Filter / sort inventory |
-| `/cars/[id]` | Listing detail + seller contact |
-| `/sell` | Demo “list your car” form |
-
-Data is seeded in `src/data` so you can run without a database.
-
-## Folder structure
+## Structure
 
 ```
 src/
-  app/                 # Next.js App Router pages
-    cars/[id]/         # Listing detail
-    search/            # Browse + filters
-    sell/              # Seller form
+  app/                      # Pages Next.js
+    categories/[slug]/      # Une page par case
+    search/                 # Recherche + filtres
+    cars/[id]/             # Fiche annonce
+    sell/                   # Publier
   components/
-    layout/            # Header, Footer
-    cars/              # CarCard, ListingGallery
-    search/            # SearchForm, FiltersPanel, SortSelect
-    sell/              # SellForm
-  data/                # Seed cars + filter helpers
-  hooks/               # Shared hooks (add yours here)
-  lib/                 # Small utilities (cn, etc.)
-  types/               # Domain TypeScript types
-public/
-  images/              # Local images / logos
+    layout/ cars/ search/ sell/
+  data/                     # Annonces seed + catégories + filtres
+  lib/smartSearch.ts        # Parser d’intention (FR)
+  types/                    # Types TypeScript
 ```
 
-## Customize next
+## Données
 
-1. Replace seed cars in `src/data/cars.ts` with your API or CMS.
-2. Drop brand assets into `public/images/`.
-3. Tweak colors / fonts in `src/app/globals.css` and `src/app/layout.tsx`.
-4. Connect `SellForm` to a real backend endpoint.
-
-## Scripts
-
-```bash
-npm run dev      # development
-npm run build    # production build
-npm start        # serve build
-npm run lint     # ESLint
-```
+Les annonces sont dans `src/data/cars.ts` (démo, pas encore d’API externe).  
+Remplacez-les plus tard par un vrai flux d’annonces (API / scrapers / CMS).
