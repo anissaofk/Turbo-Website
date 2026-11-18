@@ -1,18 +1,21 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useEffectEvent, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IconArrow, IconRobot } from "@/components/icons";
-import { categories } from "@/data/categories";
-import { getLocations } from "@/data/cars";
+import { getSearchableCategories } from "@/data/categories";
 import { getAllMakes } from "@/data/makes";
+import { formatPostalInput, RADIUS_OPTIONS_KM } from "@/data/geo";
 import { getModelsForMake } from "@/data/models";
+import { tBodyType, tFuel, tTransmission } from "@/i18n/format";
+import { useT } from "@/i18n/LanguageProvider";
 import {
   describeIntent,
   intentToQuery,
   parseSmartIntent,
 } from "@/lib/smartSearch";
 import { cn } from "@/lib/utils";
+import type { SiteCaseId } from "@/types";
 
 type HomeSearchPanelProps = {
   /** Si true, soumet vers /search. Sinon, filtre la page d'accueil via callback. */
@@ -20,15 +23,37 @@ type HomeSearchPanelProps = {
   liveFilter?: boolean;
 };
 
+const fuels = ["Essence", "Diesel", "Hybride", "Électrique"] as const;
+const transmissions = ["Manuelle", "Automatique"] as const;
+const bodyTypes = [
+  "Berline",
+  "VUS",
+  "Compacte",
+  "Coupé",
+  "Familiale",
+  "Cabriolet",
+  "Sportive",
+] as const;
+const yearOptions = Array.from({ length: 16 }, (_, i) => 2026 - i);
+const mileageOptions = [25000, 50000, 75000, 100000, 150000];
+
 function buildParams(values: {
   intent: string;
+  postalCode: string;
+  radiusKm: string;
   category: string;
   make: string;
   model: string;
   priceMin: string;
   priceMax: string;
   monthlyMax: string;
-  location: string;
+  yearMin: string;
+  yearMax: string;
+  mileageMax: string;
+  fuel: string;
+  transmission: string;
+  bodyType: string;
+  excludeDamaged: boolean;
   sporty: boolean;
   reliable: boolean;
   offer: boolean;
@@ -42,13 +67,23 @@ function buildParams(values: {
     });
   }
 
+  if (values.postalCode.trim()) {
+    params.set("postalCode", values.postalCode.trim());
+    params.set("radiusKm", values.radiusKm || "100");
+  }
   if (values.category) params.set("category", values.category);
   if (values.make) params.set("make", values.make);
   if (values.model.trim()) params.set("model", values.model.trim());
   if (values.priceMin) params.set("priceMin", values.priceMin);
   if (values.priceMax) params.set("priceMax", values.priceMax);
   if (values.monthlyMax) params.set("monthlyMax", values.monthlyMax);
-  if (values.location) params.set("location", values.location);
+  if (values.yearMin) params.set("yearMin", values.yearMin);
+  if (values.yearMax) params.set("yearMax", values.yearMax);
+  if (values.mileageMax) params.set("mileageMax", values.mileageMax);
+  if (values.fuel) params.set("fuel", values.fuel);
+  if (values.transmission) params.set("transmission", values.transmission);
+  if (values.bodyType) params.set("bodyType", values.bodyType);
+  params.set("excludeDamaged", values.excludeDamaged ? "1" : "0");
   if (values.sporty) params.set("sporty", "1");
   if (values.reliable) params.set("reliable", "1");
   if (values.offer) params.set("offer", "1");
@@ -62,17 +97,28 @@ export function HomeSearchPanel({
   liveFilter = false,
 }: HomeSearchPanelProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
+  const t = useT();
   const makes = useMemo(() => getAllMakes(), []);
-  const locations = useMemo(() => getLocations(), []);
 
   const [intent, setIntent] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [radiusKm, setRadiusKm] = useState("100");
   const [category, setCategory] = useState("");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
   const [monthlyMax, setMonthlyMax] = useState("");
-  const [location, setLocation] = useState("");
+  const [yearMin, setYearMin] = useState("");
+  const [yearMax, setYearMax] = useState("");
+  const [mileageMax, setMileageMax] = useState("");
+  const [fuel, setFuel] = useState("");
+  const [transmission, setTransmission] = useState("");
+  const [bodyType, setBodyType] = useState("");
+  const [excludeDamaged, setExcludeDamaged] = useState(true);
   const [sporty, setSporty] = useState(false);
   const [reliable, setReliable] = useState(false);
   const [offer, setOffer] = useState(false);
@@ -81,16 +127,79 @@ export function HomeSearchPanel({
 
   const chips = intent.trim() ? describeIntent(parseSmartIntent(intent)) : [];
 
+  const notifyFilterChange = useEffectEvent((params: URLSearchParams) => {
+    if (liveFilter && onFilterChange) {
+      onFilterChange(params);
+    }
+  });
+
+  useEffect(() => {
+    const nextCategory = searchParams.get("category") ?? "";
+    const nextOffer = searchParams.get("offer") === "1";
+    setCategory(nextCategory);
+    setOffer(nextOffer);
+    const nextPostal = searchParams.get("postalCode") ?? "";
+    const nextRadius = searchParams.get("radiusKm") ?? "100";
+    setPostalCode(nextPostal);
+    setRadiusKm(nextRadius);
+    setMake(searchParams.get("make") ?? "");
+    setModel(searchParams.get("model") ?? "");
+    setPriceMin(searchParams.get("priceMin") ?? "");
+    setPriceMax(searchParams.get("priceMax") ?? "");
+    setMonthlyMax(searchParams.get("monthlyMax") ?? "");
+    setYearMin(searchParams.get("yearMin") ?? "");
+    setYearMax(searchParams.get("yearMax") ?? "");
+    setMileageMax(searchParams.get("mileageMax") ?? "");
+    setFuel(searchParams.get("fuel") ?? "");
+    setTransmission(searchParams.get("transmission") ?? "");
+    setBodyType(searchParams.get("bodyType") ?? "");
+    setExcludeDamaged(searchParams.get("excludeDamaged") !== "0");
+    setSporty(searchParams.get("sporty") === "1");
+    setReliable(searchParams.get("reliable") === "1");
+    setIntent(searchParams.get("intent") ?? "");
+
+    const params = buildParams({
+      intent: searchParams.get("intent") ?? "",
+      postalCode: nextPostal,
+      radiusKm: nextRadius,
+      category: nextCategory,
+      make: searchParams.get("make") ?? "",
+      model: searchParams.get("model") ?? "",
+      priceMin: searchParams.get("priceMin") ?? "",
+      priceMax: searchParams.get("priceMax") ?? "",
+      monthlyMax: searchParams.get("monthlyMax") ?? "",
+      yearMin: searchParams.get("yearMin") ?? "",
+      yearMax: searchParams.get("yearMax") ?? "",
+      mileageMax: searchParams.get("mileageMax") ?? "",
+      fuel: searchParams.get("fuel") ?? "",
+      transmission: searchParams.get("transmission") ?? "",
+      bodyType: searchParams.get("bodyType") ?? "",
+      excludeDamaged: searchParams.get("excludeDamaged") !== "0",
+      sporty: searchParams.get("sporty") === "1",
+      reliable: searchParams.get("reliable") === "1",
+      offer: nextOffer,
+    });
+    notifyFilterChange(params);
+  }, [pathname, searchKey, searchParams]);
+
   function currentValues() {
     return {
       intent,
+      postalCode,
+      radiusKm,
       category,
       make,
       model,
       priceMin,
       priceMax,
       monthlyMax,
-      location,
+      yearMin,
+      yearMax,
+      mileageMax,
+      fuel,
+      transmission,
+      bodyType,
+      excludeDamaged,
       sporty,
       reliable,
       offer,
@@ -116,8 +225,11 @@ export function HomeSearchPanel({
   }
 
   return (
-    <form onSubmit={goSearch} className="w-full space-y-4">
-      {/* 1. Barre de recherche */}
+    <form
+      id="recherche"
+      onSubmit={goSearch}
+      className="w-full scroll-mt-28 space-y-4"
+    >
       <div className="flex items-center gap-3 rounded-full border border-line bg-white px-3 py-2.5 shadow-lg sm:px-5">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-soft text-blue">
           <IconRobot className="h-5 w-5" />
@@ -127,14 +239,14 @@ export function HomeSearchPanel({
           onChange={(e) => {
             setIntent(e.target.value);
           }}
-          placeholder="Rechercher une voiture… Ex. : sportive fiable à moins de 700 $/mois"
+          placeholder={t.search.placeholder}
           className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted sm:text-base"
         />
         <button
           type="submit"
           className="btn-primary !px-4 !py-2.5 text-sm sm:!px-5"
         >
-          <span className="hidden sm:inline">Rechercher</span>
+          <span className="hidden sm:inline">{t.search.search}</span>
           <IconArrow className="h-4 w-4" />
         </button>
       </div>
@@ -152,15 +264,53 @@ export function HomeSearchPanel({
         </div>
       )}
 
-      {/* 2. Filtres en dessous */}
       <div className="card-soft p-4 sm:p-5">
         <p className="mb-3 text-xs font-semibold tracking-wide text-muted uppercase">
-          Filtres
+          {t.search.filters}
         </p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-[1.4fr_1fr] gap-3 sm:col-span-2">
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold text-muted">
+                {t.search.postalCode}
+              </span>
+              <input
+                value={postalCode}
+                onChange={(e) => {
+                  const next = formatPostalInput(e.target.value);
+                  setPostalCode(next);
+                  emit({ postalCode: next });
+                }}
+                placeholder={t.search.postalPlaceholder}
+                className="field uppercase"
+                maxLength={7}
+                autoComplete="postal-code"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold text-muted">
+                {t.search.radius}
+              </span>
+              <select
+                value={radiusKm}
+                onChange={(e) => {
+                  setRadiusKm(e.target.value);
+                  emit({ radiusKm: e.target.value });
+                }}
+                className="field"
+              >
+                {RADIUS_OPTIONS_KM.map((km) => (
+                  <option key={km} value={km}>
+                    {km} km
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
           <label className="block">
             <span className="mb-1 block text-[11px] font-semibold text-muted">
-              Catégorie
+              {t.search.category}
             </span>
             <select
               value={category}
@@ -170,20 +320,19 @@ export function HomeSearchPanel({
               }}
               className="field"
             >
-              <option value="">Toutes</option>
-              {categories.map((cat) => (
+              <option value="">{t.search.allCategories}</option>
+              {getSearchableCategories().map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.short}
+                  {t.categories[cat.id as SiteCaseId]}
                 </option>
               ))}
             </select>
           </label>
 
-          {/* Marque + Modèle côte à côte */}
           <div className="grid grid-cols-2 gap-3 sm:col-span-2 lg:col-span-2">
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-muted">
-                Marque
+                {t.search.make}
               </span>
               <select
                 value={make}
@@ -195,7 +344,7 @@ export function HomeSearchPanel({
                 }}
                 className="field"
               >
-                <option value="">Toutes</option>
+                <option value="">{t.search.allMakes}</option>
                 {makes.map((item) => (
                   <option key={item} value={item}>
                     {item}
@@ -206,7 +355,7 @@ export function HomeSearchPanel({
 
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-muted">
-                Modèle
+                {t.search.model}
               </span>
               <select
                 value={model}
@@ -218,7 +367,7 @@ export function HomeSearchPanel({
                 disabled={!make}
               >
                 <option value="">
-                  {make ? "Tous les modèles" : "Choisir une marque"}
+                  {make ? t.search.allModels : t.search.chooseMake}
                 </option>
                 {models.map((item) => (
                   <option key={item} value={item}>
@@ -229,17 +378,60 @@ export function HomeSearchPanel({
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:col-span-2 lg:col-span-1 xl:col-span-2">
+          <div className="grid grid-cols-2 gap-3">
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-muted">
-                Prix min ($)
+                {t.search.yearMin}
+              </span>
+              <select
+                value={yearMin}
+                onChange={(e) => {
+                  setYearMin(e.target.value);
+                  emit({ yearMin: e.target.value });
+                }}
+                className="field"
+              >
+                <option value="">{t.search.none}</option>
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold text-muted">
+                {t.search.yearMax}
+              </span>
+              <select
+                value={yearMax}
+                onChange={(e) => {
+                  setYearMax(e.target.value);
+                  emit({ yearMax: e.target.value });
+                }}
+                className="field"
+              >
+                <option value="">{t.search.none}</option>
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold text-muted">
+                {t.search.priceMin}
               </span>
               <input
                 type="number"
                 min={0}
                 step={500}
                 inputMode="numeric"
-                placeholder="Ex. : 10000"
+                placeholder="10000"
                 value={priceMin}
                 onChange={(e) => {
                   setPriceMin(e.target.value);
@@ -251,14 +443,14 @@ export function HomeSearchPanel({
 
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-muted">
-                Prix max ($)
+                {t.search.priceMax}
               </span>
               <input
                 type="number"
                 min={0}
                 step={500}
                 inputMode="numeric"
-                placeholder="Ex. : 25000"
+                placeholder="25000"
                 value={priceMax}
                 onChange={(e) => {
                   setPriceMax(e.target.value);
@@ -271,7 +463,91 @@ export function HomeSearchPanel({
 
           <label className="block">
             <span className="mb-1 block text-[11px] font-semibold text-muted">
-              Max $/mois
+              {t.search.bodyType}
+            </span>
+            <select
+              value={bodyType}
+              onChange={(e) => {
+                setBodyType(e.target.value);
+                emit({ bodyType: e.target.value });
+              }}
+              className="field"
+            >
+              <option value="">{t.search.allBodyTypes}</option>
+              {bodyTypes.map((item) => (
+                <option key={item} value={item}>
+                  {tBodyType(t, item)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-[11px] font-semibold text-muted">
+              {t.search.mileageMax}
+            </span>
+            <select
+              value={mileageMax}
+              onChange={(e) => {
+                setMileageMax(e.target.value);
+                emit({ mileageMax: e.target.value });
+              }}
+              className="field"
+            >
+              <option value="">{t.search.none}</option>
+              {mileageOptions.map((km) => (
+                <option key={km} value={km}>
+                  {km.toLocaleString("fr-CA")} km
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-[11px] font-semibold text-muted">
+              {t.search.fuel}
+            </span>
+            <select
+              value={fuel}
+              onChange={(e) => {
+                setFuel(e.target.value);
+                emit({ fuel: e.target.value });
+              }}
+              className="field"
+            >
+              <option value="">{t.search.allFuels}</option>
+              {fuels.map((item) => (
+                <option key={item} value={item}>
+                  {tFuel(t, item)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-[11px] font-semibold text-muted">
+              {t.search.transmission}
+            </span>
+            <select
+              value={transmission}
+              onChange={(e) => {
+                setTransmission(e.target.value);
+                emit({ transmission: e.target.value });
+              }}
+              className="field"
+            >
+              <option value="">{t.search.allTransmissions}</option>
+              {transmissions.map((item) => (
+                <option key={item} value={item}>
+                  {tTransmission(t, item)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-[11px] font-semibold text-muted">
+              {t.search.monthlyMax}
             </span>
             <select
               value={monthlyMax}
@@ -281,7 +557,7 @@ export function HomeSearchPanel({
               }}
               className="field"
             >
-              <option value="">Aucun</option>
+              <option value="">{t.search.none}</option>
               <option value="400">400 $</option>
               <option value="500">500 $</option>
               <option value="700">700 $</option>
@@ -289,34 +565,20 @@ export function HomeSearchPanel({
             </select>
           </label>
 
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-muted">
-              Ville
-            </span>
-            <select
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-                emit({ location: e.target.value });
-              }}
-              className="field"
-            >
-              <option value="">Partout</option>
-              {locations.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </label>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
           {(
             [
-              ["Sportive", sporty, setSporty, "sporty"],
-              ["Fiable", reliable, setReliable, "reliable"],
-              ["Offres", offer, setOffer, "offer"],
+              [
+                t.search.excludeDamaged,
+                excludeDamaged,
+                setExcludeDamaged,
+                "excludeDamaged",
+              ],
+              [t.search.sporty, sporty, setSporty, "sporty"],
+              [t.search.reliable, reliable, setReliable, "reliable"],
+              [t.search.offers, offer, setOffer, "offer"],
             ] as const
           ).map(([label, active, setActive, key]) => (
             <button

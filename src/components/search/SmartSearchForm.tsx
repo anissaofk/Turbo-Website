@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrow, IconRobot } from "@/components/icons";
+import { useT } from "@/i18n/LanguageProvider";
 import {
   describeIntent,
   intentToQuery,
@@ -18,6 +19,7 @@ export function SmartSearchForm({
   className?: string;
 }) {
   const router = useRouter();
+  const t = useT();
   const [value, setValue] = useState("");
   const preview = value.trim() ? describeIntent(parseSmartIntent(value)) : [];
 
@@ -43,12 +45,12 @@ export function SmartSearchForm({
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Ex: Je veux une sportive fiable à moins de 700 $ par mois, sans mise de fonds..."
+            placeholder={t.search.placeholder}
             className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted sm:text-base"
           />
           <button
             type="submit"
-            aria-label="Chercher"
+            aria-label={t.search.search}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue text-white transition hover:bg-blue-deep"
           >
             <IconArrow className="h-5 w-5" />

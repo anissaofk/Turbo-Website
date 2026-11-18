@@ -3,10 +3,13 @@ export type {
   Car,
   CarFilters,
   CategoryMeta,
+  ColorFamily,
+  Drivetrain,
   FuelType,
   ListingCategory,
   Seller,
   SellerType,
+  SiteCaseId,
   SmartIntent,
   Transmission,
 } from "./car";

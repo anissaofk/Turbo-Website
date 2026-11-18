@@ -106,6 +106,8 @@ export function parseSmartIntent(raw: string): SmartIntent {
     intent.category = "location";
   } else if (/inspection|garage|mécanicien|pré-?achat/.test(text)) {
     intent.category = "inspection";
+  } else if (/acheter|buy a car|\bbuy\b/.test(text)) {
+    intent.category = "buy";
   } else if (/neuf|new car|offre|promotion/.test(text)) {
     intent.category = "neuf";
   } else if (/usag[ée]|occasion|used/.test(text)) {
@@ -169,10 +171,11 @@ export function describeIntent(intent: SmartIntent): string[] {
   return chips;
 }
 
-function labelCategory(category: ListingCategory): string {
-  const map: Record<ListingCategory, string> = {
-    neuf: "Neuf & offres",
-    usage: "Usagés",
+function labelCategory(category: ListingCategory | "buy"): string {
+  const map: Record<ListingCategory | "buy", string> = {
+    buy: "Achat",
+    neuf: "Neuf",
+    usage: "Occasion",
     location: "Offres de locations",
     "lease-takeover": "Reprise de bail",
     inspection: "Inspection & garage",

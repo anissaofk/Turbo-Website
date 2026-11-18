@@ -1,21 +1,22 @@
-import type { CategoryMeta, ListingCategory } from "@/types";
+import type { CategoryMeta, ListingCategory, SiteCaseId } from "@/types";
 
+/** Cases visibles dans la nav / grille / footer */
 export const categories: CategoryMeta[] = [
   {
-    id: "neuf",
-    title: "Neuves & Offres",
-    short: "Neuves",
+    id: "buy",
+    title: "Achat",
+    short: "Achat",
     description:
-      "Véhicules neufs et promotions concessionnaires — garanties et financement.",
-    href: "/categories/neuf",
+      "Véhicules neufs et d'occasion — comparez et achetez près de chez vous.",
+    href: "/search?category=buy",
   },
   {
-    id: "usage",
-    title: "Usager",
-    short: "Usager",
+    id: "vendre",
+    title: "Vente",
+    short: "Vente",
     description:
-      "Annonces d'occasion auprès de concessionnaires et particuliers.",
-    href: "/categories/usage",
+      "Publiez votre annonce Autiva — vente, location ou reprise de bail.",
+    href: "/sell",
   },
   {
     id: "location",
@@ -51,6 +52,60 @@ export const categories: CategoryMeta[] = [
   },
 ];
 
-export function getCategory(id: ListingCategory): CategoryMeta | undefined {
-  return categories.find((c) => c.id === id);
+/** Types d'annonce pour le formulaire de publication */
+export const listingCategories: {
+  id: ListingCategory;
+  title: string;
+}[] = [
+  { id: "neuf", title: "Neuf" },
+  { id: "usage", title: "Occasion" },
+  { id: "location", title: "Location" },
+  { id: "lease-takeover", title: "Reprise de bail" },
+  { id: "location-particulier", title: "Location privée" },
+  { id: "inspection", title: "Inspection & Garage" },
+];
+
+/** Métadonnées d'affichage pour catégories d'annonce hors cases nav */
+const LISTING_CATEGORY_META: Partial<
+  Record<ListingCategory, Pick<CategoryMeta, "title" | "short" | "description" | "href">>
+> = {
+  neuf: {
+    title: "Neuf",
+    short: "Neuf",
+    description: "Véhicules neufs près de chez vous.",
+    href: "/search?category=buy",
+  },
+  usage: {
+    title: "Occasion",
+    short: "Occasion",
+    description: "Véhicules d'occasion près de chez vous.",
+    href: "/search?category=buy",
+  },
+};
+
+/**
+ * Résout une case site (`buy`, `location`, …) ou une catégorie d'annonce
+ * (`neuf`, `usage`, …). Les IDs d'annonce legacy se rattachent à Achat.
+ */
+export function getCategory(
+  id: SiteCaseId | ListingCategory | string,
+): CategoryMeta | undefined {
+  const site = categories.find((c) => c.id === id);
+  if (site) return site;
+
+  const listingMeta = LISTING_CATEGORY_META[id as ListingCategory];
+  if (!listingMeta) return undefined;
+
+  const buy = categories.find((c) => c.id === "buy");
+  if (!buy) return undefined;
+
+  return {
+    ...buy,
+    ...listingMeta,
+  };
+}
+
+/** Cases filtrables dans la recherche (sans Vente) */
+export function getSearchableCategories(): CategoryMeta[] {
+  return categories.filter((c) => c.id !== "vendre");
 }

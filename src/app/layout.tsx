@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
-import { Footer, Header } from "@/components/layout";
+import { AppShell } from "@/components/layout/AppShell";
+import { isLocale, LOCALE_COOKIE, type Locale } from "@/i18n/dictionaries";
 import "./globals.css";
 
 const body = Manrope({
@@ -23,16 +25,21 @@ export const metadata: Metadata = {
     "Votre assistant automobile intelligent pour trouver la voiture parfaite, au meilleur prix.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({
+  children,
+}: LayoutProps<"/">) {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get(LOCALE_COOKIE)?.value;
+  const initialLocale: Locale = isLocale(raw) ? raw : "fr";
+
   return (
     <html
-      lang="fr"
+      lang={initialLocale}
       className={`${body.variable} ${display.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="page-shell relative flex min-h-full flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <AppShell initialLocale={initialLocale}>{children}</AppShell>
       </body>
     </html>
   );

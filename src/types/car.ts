@@ -11,12 +11,36 @@ export type BodyType =
   | "Cabriolet"
   | "Sportive";
 
+export type Drivetrain =
+  | "Traction avant"
+  | "Propulsion"
+  | "Intégral"
+  | "4x4";
+
+export type ColorFamily =
+  | "Blanc"
+  | "Noir"
+  | "Rouge"
+  | "Bleu"
+  | "Gris"
+  | "Vert"
+  | "Autre";
+
 export type SellerType = "Concessionnaire" | "Particulier" | "Garage";
 
-/** Cases principales du site */
+/** Catégorie d'annonce (données véhicule) */
 export type ListingCategory =
   | "neuf"
   | "usage"
+  | "location"
+  | "lease-takeover"
+  | "inspection"
+  | "location-particulier";
+
+/** Cases de navigation du site */
+export type SiteCaseId =
+  | "buy"
+  | "vendre"
   | "location"
   | "lease-takeover"
   | "inspection"
@@ -51,23 +75,33 @@ export interface Car {
   color: string;
   doors: number;
   seats: number;
+  /** Rouage / entraînement */
+  drivetrain: Drivetrain;
   description: string;
   features: string[];
   tags: string[];
   images: string[];
   location: string;
+  /** Code postal canadien de l'annonce */
+  postalCode: string;
   seller: Seller;
   category: ListingCategory;
   /** Score fiabilité 1–5 (utilisé par la recherche intelligente) */
   reliability: number;
   /** Offre spéciale (neuf / promotions) */
   offer?: boolean;
+  /** Véhicule certifié concessionnaire */
+  certified?: boolean;
+  /** Annonce véhicule endommagé / salvage */
+  damaged?: boolean;
   featured?: boolean;
   createdAt: string;
 }
 
 export interface CarFilters {
-  category?: ListingCategory;
+  /** Case / filtre : buy = neuf + usage */
+  category?: ListingCategory | "buy";
+
   make?: string;
   model?: string;
   priceMin?: number;
@@ -80,17 +114,41 @@ export interface CarFilters {
   fuel?: FuelType;
   transmission?: Transmission;
   bodyType?: BodyType;
+  drivetrain?: Drivetrain;
+  color?: ColorFamily;
+  sellerType?: SellerType;
+  doors?: number;
+  seats?: number;
+  powerMin?: number;
+  powerMax?: number;
+  feature?: string;
+  /** Exclure les véhicules endommagés (défaut AutoHebdo) */
+  excludeDamaged?: boolean;
+  certified?: boolean;
+  /** Annonces publiées depuis N jours */
+  listedWithinDays?: number;
   location?: string;
+  postalCode?: string;
+  /** Rayon de recherche en km autour du code postal */
+  radiusKm?: number;
   offer?: boolean;
   reliable?: boolean;
   sporty?: boolean;
   q?: string;
   intent?: string;
-  sort?: "price-asc" | "price-desc" | "monthly-asc" | "mileage-asc" | "year-desc" | "newest";
+  sort?:
+    | "price-asc"
+    | "price-desc"
+    | "monthly-asc"
+    | "mileage-asc"
+    | "mileage-desc"
+    | "year-desc"
+    | "newest"
+    | "oldest";
 }
 
 export interface CategoryMeta {
-  id: ListingCategory;
+  id: SiteCaseId;
   title: string;
   short: string;
   description: string;
@@ -106,7 +164,7 @@ export interface SmartIntent {
   reliable?: boolean;
   fuel?: FuelType;
   bodyType?: BodyType;
-  category?: ListingCategory;
+  category?: ListingCategory | "buy";
   priceMax?: number;
   make?: string;
 }

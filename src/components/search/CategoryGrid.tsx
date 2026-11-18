@@ -1,3 +1,5 @@
+"use client";
+
 import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import {
@@ -5,15 +7,17 @@ import {
   IconCar,
   IconChevron,
   IconSwap,
+  IconTag,
   IconUsers,
   IconWrench,
 } from "@/components/icons";
 import { categories } from "@/data/categories";
-import type { ListingCategory } from "@/types";
+import { useT } from "@/i18n/LanguageProvider";
+import type { SiteCaseId } from "@/types";
 
-const icons: Record<ListingCategory, ComponentType<SVGProps<SVGSVGElement>>> = {
-  neuf: IconCar,
-  usage: IconCar,
+const icons: Record<SiteCaseId, ComponentType<SVGProps<SVGSVGElement>>> = {
+  buy: IconCar,
+  vendre: IconTag,
   location: IconCalendar,
   "lease-takeover": IconSwap,
   inspection: IconWrench,
@@ -21,6 +25,8 @@ const icons: Record<ListingCategory, ComponentType<SVGProps<SVGSVGElement>>> = {
 };
 
 export function CategoryGrid() {
+  const t = useT();
+
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       {categories.map((category) => {
@@ -35,15 +41,10 @@ export function CategoryGrid() {
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-soft text-blue">
                 <Icon className="h-5 w-5" />
               </span>
-              {category.id === "neuf" && (
-                <span className="rounded-full bg-blue px-2 py-0.5 text-[10px] font-semibold text-white">
-                  Promotions
-                </span>
-              )}
             </div>
             <div className="mt-4 flex items-center justify-between gap-2">
               <p className="font-display text-sm font-semibold leading-snug text-blue-navy">
-                {category.title}
+                {t.categories[category.id]}
               </p>
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-tint text-blue transition group-hover:bg-blue group-hover:text-white">
                 <IconChevron className="h-4 w-4" />

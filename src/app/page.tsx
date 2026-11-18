@@ -1,36 +1,39 @@
+"use client";
+
+import { HomeHeroSearch } from "@/components/search/HomeHeroSearch";
 import { HomeListings } from "@/components/search/HomeListings";
+import { useT } from "@/i18n/LanguageProvider";
 
 const heroImage =
-  "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=2000&q=80";
+  "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=80";
 
 export default function Home() {
+  const t = useT();
+
   return (
     <>
       <section
-        className="hero-autiva relative overflow-hidden"
+        className="hero-autiva relative min-h-[78vh] overflow-hidden pb-10 pt-12 sm:min-h-[72vh] sm:pt-16"
         style={{ ["--hero-image" as string]: `url(${heroImage})` }}
       >
-        <div className="relative mx-auto max-w-[1400px] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
-            ✨ Propulsé par l&apos;IA
-          </span>
-          <h1 className="mt-4 max-w-2xl font-display text-3xl leading-[1.1] font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Trouvez. Comparez.{" "}
-            <span className="text-sky-300">Achetez.</span>
-            <br />
-            <span className="text-blue">Plus simplement.</span>
-          </h1>
-          <p className="mt-3 max-w-xl text-sm text-white/85 sm:text-base">
-            Recherchez parmi les annonces Autiva — filtres et résultats juste
-            en dessous.
+        <div className="relative mx-auto max-w-[1400px] px-4 text-center sm:px-6 lg:px-8">
+          <p className="animate-rise font-display text-sm font-bold tracking-[0.22em] text-white/90 uppercase">
+            Autiva
           </p>
+          <h1 className="animate-rise delay-1 mx-auto mt-3 max-w-3xl font-display text-4xl leading-[1.08] font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {t.home.headline}
+          </h1>
+          <p className="animate-rise delay-2 mx-auto mt-4 max-w-xl text-base text-white/85 sm:text-lg">
+            {t.home.subtitle}
+          </p>
+        </div>
+
+        <div className="mt-10 sm:mt-12">
+          <HomeHeroSearch />
         </div>
       </section>
 
-      {/* Barre → filtres → autos */}
-      <section className="relative z-10 -mt-4 pt-2">
-        <HomeListings />
-      </section>
+      <HomeListings />
     </>
   );
 }

@@ -1,12 +1,38 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { CarCard } from "@/components/cars";
+import { notFound, redirect } from "next/navigation";
+import { CategoryPageView } from "@/components/search/CategoryPageView";
 import { getCarsByCategory } from "@/data/cars";
 import { categories, getCategory } from "@/data/categories";
-import type { ListingCategory } from "@/types";
+import type { ListingCategory, SiteCaseId } from "@/types";
+
+const SEARCH_REDIRECTS: Record<string, string> = {
+  buy: "/search?category=buy",
+  neuf: "/search?category=buy",
+  usage: "/search?category=buy",
+  vendre: "/sell",
+};
+
+const LISTING_SLUGS = [
+  "location",
+  "lease-takeover",
+  "location-particulier",
+  "inspection",
+] as const satisfies readonly ListingCategory[];
+
+type ListingSlug = (typeof LISTING_SLUGS)[number];
+
+function isListingSlug(slug: string): slug is ListingSlug {
+  return (LISTING_SLUGS as readonly string[]).includes(slug);
+}
 
 export function generateStaticParams() {
-  return categories.map((cat) => ({ slug: cat.id }));
+  const legacy = Object.keys(SEARCH_REDIRECTS).map((slug) => ({ slug }));
+  const fromNav = categories.map((cat) => ({ slug: cat.id }));
+  const seen = new Set<string>();
+  return [...fromNav, ...legacy].filter(({ slug }) => {
+    if (seen.has(slug)) return false;
+    seen.add(slug);
+    return true;
+  });
 }
 
 export async function generateMetadata({
@@ -15,8 +41,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = getCategory(slug as ListingCategory);
-  if (!category) return { title: "Catégorie" };
+  if (SEARCH_REDIRECTS[slug]) {
+    return { title: "Autiva" };
+  }
+  const category = getCategory(slug);
+  if (!category) return { title: "Autiva" };
   return {
     title: category.title,
     description: category.description,
@@ -29,52 +58,22 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = getCategory(slug as ListingCategory);
+
+  const searchRedirect = SEARCH_REDIRECTS[slug];
+  if (searchRedirect) {
+    redirect(searchRedirect);
+  }
+
+  if (!isListingSlug(slug)) {
+    notFound();
+  }
+
+  const category = getCategory(slug);
   if (!category) notFound();
 
-  const listings = getCarsByCategory(category.id);
+  const listings = getCarsByCategory(slug);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <Link
-        href="/"
-        className="text-sm font-semibold text-muted transition-colors hover:text-ink"
-      >
-        ← Accueil
-      </Link>
-
-      <div className="mt-6 animate-rise max-w-3xl">
-        <p className="text-xs font-semibold tracking-[0.16em] text-accent uppercase">
-          Case Autiva
-        </p>
-        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-          {category.title}
-        </h1>
-        <p className="mt-3 text-muted">{category.description}</p>
-      </div>
-
-      <div className="mt-10 flex items-center justify-between border-b border-line pb-4">
-        <p className="text-sm text-muted">
-          <span className="font-semibold text-ink">{listings.length}</span>{" "}
-          annonces
-        </p>
-        <Link
-          href={`/search?category=${category.id}`}
-          className="text-sm font-semibold text-accent hover:text-accent-deep"
-        >
-          Filtrer dans la recherche →
-        </Link>
-      </div>
-
-      {listings.length === 0 ? (
-        <p className="mt-10 text-muted">Aucune annonce dans cette case pour le moment.</p>
-      ) : (
-        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {listings.map((car) => (
-            <CarCard key={car.id} car={car} />
-          ))}
-        </div>
-      )}
-    </div>
+    <CategoryPageView slug={slug as SiteCaseId} listings={listings} />
   );
 }

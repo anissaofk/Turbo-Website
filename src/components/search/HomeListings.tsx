@@ -1,43 +1,43 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import Link from "next/link";
 import { CarCard } from "@/components/cars";
-import { HomeSearchPanel } from "@/components/search/HomeSearchPanel";
-import { filterCars, parseFilters } from "@/data/filter";
-import type { CarFilters } from "@/types";
+import { filterCars } from "@/data/filter";
+import { useT } from "@/i18n/LanguageProvider";
 
 export function HomeListings() {
-  const [filters, setFilters] = useState<CarFilters>({ sort: "newest" });
-
-  const results = useMemo(() => filterCars(filters), [filters]);
-
-  function onFilterChange(params: URLSearchParams) {
-    const record: Record<string, string> = {};
-    params.forEach((value, key) => {
-      record[key] = value;
-    });
-    setFilters(parseFilters(record));
-  }
+  const t = useT();
+  const results = useMemo(
+    () => filterCars({ category: "buy", sort: "newest" }).slice(0, 8),
+    [],
+  );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
-      <HomeSearchPanel liveFilter onFilterChange={onFilterChange} />
-
-      <div className="mt-8 flex items-center justify-between border-b border-line pb-3">
-        <p className="text-sm text-muted">
-          <span className="font-semibold text-blue-navy">{results.length}</span>{" "}
-          véhicules
-        </p>
+    <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold tracking-[0.16em] text-blue uppercase">
+            {t.home.recentEyebrow}
+          </p>
+          <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-blue-navy sm:text-3xl">
+            {t.home.recentTitle}
+          </h2>
+        </div>
+        <Link
+          href="/search?category=buy"
+          className="text-sm font-semibold text-blue hover:text-blue-deep"
+        >
+          {t.home.seeAll} →
+        </Link>
       </div>
 
       {results.length === 0 ? (
         <div className="mt-10 rounded-[1.25rem] border border-dashed border-line bg-white px-6 py-16 text-center">
-          <h2 className="font-display text-2xl font-semibold text-blue-navy">
-            Aucune voiture trouvée
-          </h2>
-          <p className="mt-2 text-muted">
-            Modifiez les filtres ou élargissez votre recherche.
-          </p>
+          <h3 className="font-display text-2xl font-semibold text-blue-navy">
+            {t.home.noResultsTitle}
+          </h3>
+          <p className="mt-2 text-muted">{t.home.noResultsCopy}</p>
         </div>
       ) : (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -46,6 +46,6 @@ export function HomeListings() {
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }
