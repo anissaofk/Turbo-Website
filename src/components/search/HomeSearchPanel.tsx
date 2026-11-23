@@ -46,7 +46,6 @@ function buildParams(values: {
   model: string;
   priceMin: string;
   priceMax: string;
-  monthlyMax: string;
   yearMin: string;
   yearMax: string;
   mileageMax: string;
@@ -76,7 +75,6 @@ function buildParams(values: {
   if (values.model.trim()) params.set("model", values.model.trim());
   if (values.priceMin) params.set("priceMin", values.priceMin);
   if (values.priceMax) params.set("priceMax", values.priceMax);
-  if (values.monthlyMax) params.set("monthlyMax", values.monthlyMax);
   if (values.yearMin) params.set("yearMin", values.yearMin);
   if (values.yearMax) params.set("yearMax", values.yearMax);
   if (values.mileageMax) params.set("mileageMax", values.mileageMax);
@@ -111,7 +109,6 @@ export function HomeSearchPanel({
   const [model, setModel] = useState("");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
-  const [monthlyMax, setMonthlyMax] = useState("");
   const [yearMin, setYearMin] = useState("");
   const [yearMax, setYearMax] = useState("");
   const [mileageMax, setMileageMax] = useState("");
@@ -146,7 +143,6 @@ export function HomeSearchPanel({
     setModel(searchParams.get("model") ?? "");
     setPriceMin(searchParams.get("priceMin") ?? "");
     setPriceMax(searchParams.get("priceMax") ?? "");
-    setMonthlyMax(searchParams.get("monthlyMax") ?? "");
     setYearMin(searchParams.get("yearMin") ?? "");
     setYearMax(searchParams.get("yearMax") ?? "");
     setMileageMax(searchParams.get("mileageMax") ?? "");
@@ -167,7 +163,6 @@ export function HomeSearchPanel({
       model: searchParams.get("model") ?? "",
       priceMin: searchParams.get("priceMin") ?? "",
       priceMax: searchParams.get("priceMax") ?? "",
-      monthlyMax: searchParams.get("monthlyMax") ?? "",
       yearMin: searchParams.get("yearMin") ?? "",
       yearMax: searchParams.get("yearMax") ?? "",
       mileageMax: searchParams.get("mileageMax") ?? "",
@@ -192,7 +187,6 @@ export function HomeSearchPanel({
       model,
       priceMin,
       priceMax,
-      monthlyMax,
       yearMin,
       yearMax,
       mileageMax,
@@ -542,26 +536,6 @@ export function HomeSearchPanel({
                   {tTransmission(t, item)}
                 </option>
               ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-muted">
-              {t.search.monthlyMax}
-            </span>
-            <select
-              value={monthlyMax}
-              onChange={(e) => {
-                setMonthlyMax(e.target.value);
-                emit({ monthlyMax: e.target.value });
-              }}
-              className="field"
-            >
-              <option value="">{t.search.none}</option>
-              <option value="400">400 $</option>
-              <option value="500">500 $</option>
-              <option value="700">700 $</option>
-              <option value="900">900 $</option>
             </select>
           </label>
 

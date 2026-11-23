@@ -14,7 +14,7 @@ export function SearchForm() {
     <form
       action="/search"
       method="get"
-      className="grid gap-3 md:grid-cols-2 lg:grid-cols-[1.1fr_1.1fr_1fr_auto]"
+      className="grid gap-3 md:grid-cols-2 lg:grid-cols-[1.1fr_1.1fr_auto]"
     >
       <label className="block">
         <span className="mb-1.5 block text-[11px] font-semibold tracking-[0.14em] text-white/70 uppercase">
@@ -41,19 +41,6 @@ export function SearchForm() {
               {make}
             </option>
           ))}
-        </select>
-      </label>
-
-      <label className="block">
-        <span className="mb-1.5 block text-[11px] font-semibold tracking-[0.14em] text-white/70 uppercase">
-          {t.search.monthlyMax}
-        </span>
-        <select name="monthlyMax" defaultValue="" className="field">
-          <option value="">{t.search.none}</option>
-          <option value="400">400 $</option>
-          <option value="500">500 $</option>
-          <option value="700">700 $</option>
-          <option value="900">900 $</option>
         </select>
       </label>
 

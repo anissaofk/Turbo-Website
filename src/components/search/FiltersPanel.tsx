@@ -251,29 +251,6 @@ export function FiltersPanel({ filters }: { filters: CarFilters }) {
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <label className="block">
-          <FieldLabel>{t.search.monthlyMax}</FieldLabel>
-          <input
-            name="monthlyMax"
-            type="number"
-            min={0}
-            defaultValue={filters.monthlyMax ?? ""}
-            className="field"
-          />
-        </label>
-        <label className="block">
-          <FieldLabel>{t.search.downPaymentMax}</FieldLabel>
-          <input
-            name="downPaymentMax"
-            type="number"
-            min={0}
-            defaultValue={filters.downPaymentMax ?? ""}
-            className="field"
-          />
-        </label>
-      </div>
-
       <label className="block">
         <FieldLabel>{t.search.bodyType}</FieldLabel>
         <select
