@@ -1,11 +1,9 @@
+
 import type { NextConfig } from "next";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, "") || "";
-
 const nextConfig: NextConfig = {
-  // Export statique (ex. GitHub Pages) — définir NEXT_PUBLIC_BASE_PATH=/repo si besoin
   output: "export",
-  ...(basePath ? { basePath, assetPrefix: basePath } : {}),
+  basePath: "/Turbo-Website",
   trailingSlash: true,
 
   images: {
@@ -15,6 +13,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      // Inventaire Auto HM
       {
         protocol: "https",
         hostname: "dealercdn.adws.ca",
