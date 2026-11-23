@@ -7,6 +7,7 @@ export { HomeHeroSearch } from "./HomeHeroSearch";
 export { HomeListings } from "./HomeListings";
 export { CategoryGrid } from "./CategoryGrid";
 export { SearchPageHeader } from "./SearchPageHeader";
+export { SearchResults } from "./SearchResults";
 export {
   IntentBanner,
   SearchEmptyState,
